@@ -31,15 +31,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        musicController = new StreamController();
 
         try {
+            musicController = new StreamController();
+
             server = new MyServer();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        try {
             this.txtIpAddress = (TextView)this.findViewById(R.id.textView_ip);
             server.start();
             this.txtIpAddress.setText(getLocalIpAddress());
@@ -47,8 +44,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
   //      server.stop();
     }
 
