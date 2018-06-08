@@ -1,31 +1,35 @@
 package etsmtl.gti785.musicserver;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.squareup.okhttp.OkHttpClient;
 
+
+import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "IP";
+    public static final int PORT = 8765;
+
     private static MyServer server;
     TextView txtIpAddress;
     StreamController musicController;
     StreamService musicService;
     OkHttpClient client = new OkHttpClient();
 
-    /*
-    Volley + OKhttp est recommandé
-    Utiliser okHttp dans asynctask
-    // http://www.vogella.com/tutorials/JavaLibrary-OkHttp/article.html
 
-     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,8 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             musicController = new StreamController();
-
-            server = new MyServer();
+            server = new MyServer(PORT,this);
 
             this.txtIpAddress = (TextView)this.findViewById(R.id.textView_ip);
             server.start();
@@ -46,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         }
   //      server.stop();
     }
+
 
     public String getLocalIpAddress() {
 
