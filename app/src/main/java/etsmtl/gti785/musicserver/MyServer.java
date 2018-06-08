@@ -1,46 +1,16 @@
 package etsmtl.gti785.musicserver;
 
 import android.content.res.AssetFileDescriptor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
-import android.net.Uri;
-import android.os.Build;
 import android.util.Base64;
 import android.util.Log;
-
-import org.jaudiotagger.audio.AudioFile;
-import org.jaudiotagger.audio.AudioFileIO;
-import org.jaudiotagger.tag.FieldKey;
-import org.jaudiotagger.tag.Tag;
-import org.json.JSONObject;
-
-import org.jaudiotagger.audio.AudioFile;
-import org.jaudiotagger.audio.AudioFileIO;
-import org.jaudiotagger.tag.FieldKey;
-import org.jaudiotagger.tag.Tag;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-
+import org.jaudiotagger.audio.AudioFile;
+import org.json.JSONObject;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import fi.iki.elonen.NanoHTTPD;
-import wseemann.media.FFmpegMediaMetadataRetriever;
 
 public class MyServer extends NanoHTTPD {
 
@@ -68,7 +38,6 @@ public class MyServer extends NanoHTTPD {
         }
         return newFixedLengthResponse("outOfIf");
     }
-
 
     public JSONObject retrieveSongMetadata(String songName){
 
