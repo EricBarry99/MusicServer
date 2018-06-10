@@ -2,6 +2,7 @@ package etsmtl.gti785.musicserver;
 
 import android.net.Uri;
 
+import java.io.FileInputStream;
 import java.lang.reflect.Array;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -36,7 +37,22 @@ public class StreamController {
         } else if (uri.equals("/shuffleSong")) {
             return streamService.getRandomSong();
         } else {
-            return NanoHTTPD.newFixedLengthResponse(NanoHTTPD.Response.Status.BAD_REQUEST, "application/json", "Bad Request");
+            // gestion par defaut, la requete est pas bonne
+               return NanoHTTPD.newFixedLengthResponse(NanoHTTPD.Response.Status.BAD_REQUEST, "application/json", "Bad Request");
+
+            // essaie de retourner un FileInputStream pour retourner la chanson a jouer
+   /*
+            try {
+//                return NanoHTTPD.newFixedLengthResponse(NanoHTTPD.Response.Status.ACCEPTED, "audio/mpeg", "fis");
+//                return new NanoHTTPD.Response(NanoHTTPD.Response.Status.OK, "audio/mpeg", fis);
+
+//                return streamService.getFile();
+
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            */
+     //       return null;
         }
 
     }

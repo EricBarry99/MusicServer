@@ -7,6 +7,8 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+
+import java.io.FileInputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import fi.iki.elonen.NanoHTTPD;
@@ -62,17 +64,31 @@ public class StreamService {
         return null;
     }
 
+    public NanoHTTPD.Response getFile(){
+
+        int resID = mainActivity.getResources().getIdentifier("heart", "raw", mainActivity.getPackageName());
+        String path = getPathWithSongId(resID);
+        AssetFileDescriptor assetFileDescriptor = mainActivity.getResources().openRawResourceFd(resID);
+        FileInputStream fis = null;
+
+        try {
+            fis = new FileInputStream(assetFileDescriptor.getFileDescriptor());
+            return NanoHTTPD.newFixedLengthResponse(NanoHTTPD.Response.Status.ACCEPTED, "audio/mpeg", fis, assetFileDescriptor.getLength());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    return null;
+    }
+
 
     public JsonObject retrieveSongMetadata(String nextSong){
 
 //        String nextSong = mainActivity.getPlayList().get(1);
         int resID = mainActivity.getResources().getIdentifier(nextSong, "raw", mainActivity.getPackageName());
         String path = getPathWithSongId(resID);
-
         String[] parts = path.split("/");
-
         path = parts[parts.length-1];
-
 
         // on initialise le metadataretriever avec un assetfiledescriptor pour l'aider a traiter le fichier
         //  source: http://book2s.com/java/api/android/media/mediametadataretriever/setdatasource-3.html
@@ -106,8 +122,6 @@ public class StreamService {
         }
         return songMetadata;
     }
-
-
 
     private String getPathWithSongId(int id){
         return mainActivity.getResources().getResourceName(id);
