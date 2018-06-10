@@ -8,7 +8,6 @@
     tools:context=".MainActivity">
 
 
-
     <TableLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -43,7 +42,7 @@
                 android:id="@+id/textView_ip"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="168.192.14.52"
+                android:text="192.168.0.1"
                 android:textSize="20dp" />
         </TableRow>
 
@@ -53,13 +52,13 @@
                 android:gravity="left"
                 android:padding="10dp"
                 android:textSize="20dp"
-                android:text="PORT " />
+                android:text="PORT" />
 
             <TextView
                 android:id="@+id/textView_port"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="0000"
+                android:text="8765"
                 android:textSize="20dp" />
         </TableRow>
 
@@ -89,8 +88,6 @@
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintTop_toTopOf="parent">
-
-
 
         <Button
             android:id="@+id/btnApply"
