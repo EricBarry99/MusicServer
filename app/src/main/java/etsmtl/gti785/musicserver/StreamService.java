@@ -3,14 +3,14 @@ package etsmtl.gti785.musicserver;
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaMetadataRetriever;
 import android.util.Base64;
-import android.util.Log;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 import java.io.FileInputStream;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.io.InputStream;
+
 import fi.iki.elonen.NanoHTTPD;
 
 public class StreamService {
@@ -73,12 +73,25 @@ public class StreamService {
 
         try {
             fis = new FileInputStream(assetFileDescriptor.getFileDescriptor());
-            return NanoHTTPD.newFixedLengthResponse(NanoHTTPD.Response.Status.ACCEPTED, "audio/mpeg", fis, assetFileDescriptor.getLength());
+
+            // browser: download file; app: fileNotFoundException
+//            return NanoHTTPD.newFixedLengthResponse(NanoHTTPD.Response.Status.ACCEPTED,  "application/octet-stream", fis, assetFileDescriptor.getLength());
+
+            // prepared failed
+//               return NanoHTTPD.newFixedLengthResponse(NanoHTTPD.Response.Status.PARTIAL_CONTENT,  "audio/mpeg-url", fis, assetFileDescriptor.getLength());
+
+            // browser: file download; client: file found E/fi.iki.elonen.NanoHTTPD: Could not send response to the client
+//            return NanoHTTPD.newFixedLengthResponse(NanoHTTPD.Response.Status.ACCEPTED,  "audio/mpeg-url", fis, assetFileDescriptor.getLength());
+            return NanoHTTPD.newChunkedResponse(NanoHTTPD.Response.Status.ACCEPTED,  "audio/mpeg-url", fis);
+
+            // file not found exception +   java.net.SocketException: sendto failed: ECONNRESET (Connection reset by peer)
+//            return NanoHTTPD.newFixedLengthResponse(NanoHTTPD.Response.Status.ACCEPTED,  "audio/mpeg", fis, assetFileDescriptor.getLength());
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-    return null;
+
+       return NanoHTTPD.newFixedLengthResponse(NanoHTTPD.Response.Status.BAD_REQUEST, "application/json", "File Problem");
     }
 
 
@@ -123,7 +136,7 @@ public class StreamService {
         return songMetadata;
     }
 
-    private String getPathWithSongId(int id){
+    public String getPathWithSongId(int id){
         return mainActivity.getResources().getResourceName(id);
     }
 }

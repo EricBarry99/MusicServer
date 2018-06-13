@@ -7,7 +7,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
+
 import com.squareup.okhttp.OkHttpClient;
+
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -31,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             server = new MyServer(PORT,this);
-
             this.txtIpAddress = (TextView)this.findViewById(R.id.textView_ip);
             this.txtPortNumber = (TextView)this.findViewById(R.id.textView_port);
             this.playList = listElemRaw();
