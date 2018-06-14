@@ -32,3 +32,4 @@ public class StreamController {
     }
 }
 
+///nextSong?song=heart
