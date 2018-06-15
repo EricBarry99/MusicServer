@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">MusicServer</string>
+    <string name="app_name2">MusicServer</string>
+    <string name="IP">IP</string>
+    <string name="PORT">PORT</string>
+    <string name="PORTF">8765</string>
+    <string name="serv">Server infos</string>
 </resources>
