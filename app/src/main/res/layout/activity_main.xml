@@ -15,7 +15,7 @@
         <TableRow
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <TextView  android:padding="10dp" />
+        <TextView  android:padding="20dp" />
     </TableRow>
         <TableRow
             android:layout_width="match_parent"
@@ -60,4 +60,18 @@
                 android:textSize="20sp" />
         </TableRow>
     </TableLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+      >
+        <ImageView
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="90dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/radio"
+            android:layout_centerVertical="true" />
+    </RelativeLayout>
+
 </android.support.constraint.ConstraintLayout>
