@@ -1,46 +1,60 @@
 package etsmtl.gti785.bean;
 
-import android.graphics.Bitmap;
-
 public class Song {
 
-    public Artist artist;
-    public Album album;
-    public String duration;
     public String title;
-    public Bitmap albumArt;
-    public String composer;
-    public String genre;
+    public String artist;
+    public String album;
+    public String albumArt;
+    public String duration;
+    public String path;
 
     public Song() {
     }
 
+    public Song(String title, String artist, String album, String albumArt, String duration, String path) {
 
-    public Song(Artist artist, Album album, String duration, String title, Bitmap albumArt, String composer, String genre) {
+//        byte[] albumArtByteArray = albumArt.getBytes();
+
+        this.title = title;
         this.artist = artist;
         this.album = album;
-        this.duration = duration;
-        this.title = title;
         this.albumArt = albumArt;
-        this.composer = composer;
-        this.genre = genre;
+        this.duration = duration;
+        this.path = path;
     }
 
 
-    public Artist getArtist() {
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getArtist() {
         return artist;
     }
 
-    public void setArtist(Artist artist) {
+    public void setArtist(String artist) {
         this.artist = artist;
     }
 
-    public Album getAlbum() {
+    public String getAlbum() {
         return album;
     }
 
-    public void setAlbum(Album album) {
+    public void setAlbum(String album) {
         this.album = album;
+    }
+
+    public String getAlbumArt() {
+        return albumArt;
+    }
+
+    public void setAlbumArt(String albumArt) {
+        this.albumArt = albumArt;
     }
 
     public String getDuration() {
@@ -51,35 +65,11 @@ public class Song {
         this.duration = duration;
     }
 
-    public String getTitle() {
-        return title;
+    public String getPath() {
+        return path;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public Bitmap getAlbumArt() {
-        return albumArt;
-    }
-
-    public void setAlbumArt(Bitmap albumArt) {
-        this.albumArt = albumArt;
-    }
-
-    public String getComposer() {
-        return composer;
-    }
-
-    public void setComposer(String composer) {
-        this.composer = composer;
-    }
-
-    public String getGenre() {
-        return genre;
-    }
-
-    public void setGenre(String genre) {
-        this.genre = genre;
+    public void setPath(String path) {
+        this.path = path;
     }
 }

@@ -7,69 +7,116 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import java.io.FileInputStream;
-import fi.iki.elonen.NanoHTTPD;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 
+import etsmtl.gti785.bean.Song;
+import fi.iki.elonen.NanoHTTPD;
 import static fi.iki.elonen.NanoHTTPD.newChunkedResponse;
 
 public class StreamService {
 
     public MainActivity mainActivity;
+    public ArrayList<Song> playList;
 
     public StreamService(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
+        this.playList = createPlaylist();
+    }
+
+    public ArrayList<Song> getPlayList() {
+        return playList;
+    }
+
+    public ArrayList<Song> createPlaylist() {
+        ArrayList<Song> playList = new ArrayList<>();
+        Field[] fields = R.raw.class.getFields();
+        for (int count = 0; count < fields.length; count++) {
+            Song song = createSongFromFileName(fields[count].getName());
+            playList.add(song);
+        }
+        return playList;
     }
 
     public NanoHTTPD.Response initPlayer(){
-       String nextSong = mainActivity.getPlayList().get(0);
-        JsonObject songMetadata = retrieveSongMetadata(nextSong);
-        Gson gson = new GsonBuilder().create();
-        String jsonSongMetadata = gson.toJson(songMetadata);
-
-        return NanoHTTPD.newFixedLengthResponse(NanoHTTPD.Response.Status.ACCEPTED,"application/json", jsonSongMetadata);
+        return generateResponse(getPlayList().get(0).getTitle());
     }
 
     public NanoHTTPD.Response getNextSong(String currentSong){
 
-        // find the next song
-        int currentSongIndex = mainActivity.playList.indexOf(currentSong);
-        int playlistSize = mainActivity.playList.size();
-        String nextSong;
+        int currentSongIndex = 0;
+        Song nextSong;
 
-        if(currentSongIndex+1 >= playlistSize){
-            nextSong = mainActivity.getPlayList().get(0);
+        // TODO: change contains for equals after cleaning the url params String
+        for (Song song: playList) {
+            if(currentSong.contains(song.getTitle())){
+                currentSongIndex = playList.indexOf(song);
+            }
+        }
+
+        if(currentSongIndex == playList.size()-1){
+            nextSong = playList.get(0);
         }
         else{
-            nextSong = mainActivity.getPlayList().get(currentSongIndex+1);
+            nextSong = playList.get(currentSongIndex+1);
+        }
+        return generateResponse(nextSong.getTitle());
+    }
+
+    public NanoHTTPD.Response getPreviousSong(String currentSong){
+
+        int currentSongIndex = 0;
+        Song previousSong;
+
+        // TODO: change contains for equals after cleaning the url params String
+        for (Song song: playList) {
+            if(currentSong.contains(song.getTitle())){
+                currentSongIndex = playList.indexOf(song);
+            }
         }
 
-        // get the next song metadata
-        JsonObject songMetadata = retrieveSongMetadata(nextSong);
+        if(currentSongIndex == 0){
+            previousSong = playList.get(playList.size()-1);
+        }
+        else{
+            previousSong = playList.get(currentSongIndex-1);
+        }
+
+        return generateResponse(previousSong.getTitle());
+    }
+
+    // TODO: make sure that the selected song is not the one that is playing already
+    public NanoHTTPD.Response getRandomSong(){
+        int randomNum = ThreadLocalRandom.current().nextInt(0, playList.size());
+        return generateResponse(playList.get(randomNum).getTitle());
+    }
+
+    public NanoHTTPD.Response generateResponse(String songName){
+        int songIndex = 0;
+
+        for (Song song: playList) {
+            if(songName == song.getTitle()){
+                songIndex = playList.indexOf(song);
+            }
+        }
+
+        JsonObject songMetadata = retrieveSongMetadata(playList.get(songIndex));
         Gson gson = new GsonBuilder().create();
         String jsonSongMetadata = gson.toJson(songMetadata);
 
         return NanoHTTPD.newFixedLengthResponse(NanoHTTPD.Response.Status.ACCEPTED,"application/json", jsonSongMetadata);
     }
 
-    public NanoHTTPD.Response getPreviousSong(){
+    public NanoHTTPD.Response getFileStream(String uri){
 
-
-        return null;
-    }
-
-    public NanoHTTPD.Response getRandomSong(){
-
-        return null;
-    }
-
-    public NanoHTTPD.Response getFile(){
-
-        int resID = mainActivity.getResources().getIdentifier("heart", "raw", mainActivity.getPackageName());
+        String fileName = uri.substring(5,uri.length()-4);
+        int resID = mainActivity.getResources().getIdentifier(fileName, "raw", mainActivity.getPackageName());
         String path = getPathWithSongId(resID);
         AssetFileDescriptor assetFileDescriptor = mainActivity.getResources().openRawResourceFd(resID);
-        FileInputStream fis = null;
 
         try {
-            fis =  assetFileDescriptor.createInputStream();
+            FileInputStream fis = assetFileDescriptor.createInputStream();
             return newChunkedResponse(NanoHTTPD.Response.Status.OK, "audio/mpeg",fis);
         } catch (Exception e) {
             e.printStackTrace();
@@ -77,11 +124,22 @@ public class StreamService {
        return NanoHTTPD.newFixedLengthResponse(NanoHTTPD.Response.Status.BAD_REQUEST, "application/text", "File Problem");
     }
 
+    public JsonObject retrieveSongMetadata(Song song){
 
-    public JsonObject retrieveSongMetadata(String nextSong){
+        JsonObject songMetadata = new JsonObject();
+        songMetadata.addProperty("title", song.title);
+        songMetadata.addProperty("artist", song.artist);
+        songMetadata.addProperty("album", song.album);
+        songMetadata.addProperty("albumArt", song.albumArt);
+        songMetadata.addProperty("duration", song.duration);
+        songMetadata.addProperty("path", song.path);
 
-//        String nextSong = mainActivity.getPlayList().get(1);
-        int resID = mainActivity.getResources().getIdentifier(nextSong, "raw", mainActivity.getPackageName());
+        return songMetadata;
+    }
+
+        public Song createSongFromFileName(String songFileName){
+
+        int resID = mainActivity.getResources().getIdentifier(songFileName, "raw", mainActivity.getPackageName());
         String path = getPathWithSongId(resID);
         String[] parts = path.split("/");
         path = parts[parts.length-1];
@@ -99,24 +157,18 @@ public class StreamService {
 
         // encoder l'image en base64 pour la faire passer en string
         // source: https://stackoverflow.com/questions/36492084/how-to-convert-an-image-to-base64-string-in-java
-        byte[] artByteArray =  mediaMetadataRetriever.getEmbeddedPicture();
-        String artString = Base64.encodeToString(artByteArray,0);
+        byte[] artByteArray;
+        String artString;
 
-        JsonObject songMetadata = new JsonObject();
-
-        try {
-            songMetadata.addProperty("title", title);
-            songMetadata.addProperty("artist", artist);
-            songMetadata.addProperty("album", album);
-            songMetadata.addProperty("albumArt", artString);
-            songMetadata.addProperty("duration", duration);
-            songMetadata.addProperty("path", path);
-
-        }catch (Exception e){
-            System.out.println("EXCEPTION: " + e.getMessage());
-            e.getStackTrace();
+        if( mediaMetadataRetriever.getEmbeddedPicture() == null){
+            artString = null;        }
+        else{
+            artByteArray = mediaMetadataRetriever.getEmbeddedPicture();
+            artString = Base64.encodeToString(artByteArray,0);
         }
-        return songMetadata;
+
+        Song song = new Song(title, artist, album, artString, duration, path);
+        return song;
     }
 
     public String getPathWithSongId(int id){
